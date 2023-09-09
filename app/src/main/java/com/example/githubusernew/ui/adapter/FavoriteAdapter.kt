@@ -1,0 +1,63 @@
+package com.example.githubusernew.ui.adapter
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.bumptech.glide.request.RequestOptions
+import com.example.githubusernew.data.local.FavoriteEntity
+import com.example.githubusernew.databinding.ItemRowUserBinding
+import com.example.githubusernew.ui.notediffcallback.NoteDiffCallbackFav
+
+class FavoriteAdapter(private val list: ArrayList<FavoriteEntity>): RecyclerView.Adapter<FavoriteAdapter.UserViewHolder>(){
+
+    private var onItemClickCallback: OnItemClickCallback? = null
+
+    fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback){
+        this.onItemClickCallback = onItemClickCallback
+    }
+
+    fun setListUser(listNotes: List<FavoriteEntity>) {
+        val diffCallback = NoteDiffCallbackFav(this.list, listNotes)
+        val diffResult = DiffUtil.calculateDiff(diffCallback)
+        this.list.clear()
+        this.list.addAll(listNotes)
+        diffResult.dispatchUpdatesTo(this)
+    }
+
+    inner class UserViewHolder(val binding: ItemRowUserBinding): RecyclerView.ViewHolder(binding.root) {
+        fun bindData(user: FavoriteEntity) {
+
+            binding.root.setOnClickListener{
+                onItemClickCallback?.onItemClicked(user)
+            }
+
+            Glide.with(itemView)
+                .load(user.avatar_url)
+                .transition(DrawableTransitionOptions.withCrossFade())
+                .apply(RequestOptions.circleCropTransform())
+                .into(binding.ivItemAvatarUrl)
+
+            binding.tvItemUsername.text = user.login
+            binding.tvItemHtmlUrl.text = user.html_url
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FavoriteAdapter.UserViewHolder {
+        val binding = ItemRowUserBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return UserViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: FavoriteAdapter.UserViewHolder, position: Int) {
+        holder.bindData(list[position])
+    }
+
+    override fun getItemCount(): Int = list.size
+
+    interface OnItemClickCallback{
+        fun onItemClicked(data: FavoriteEntity)
+    }
+
+}

@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/flow_navigation"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.example.githubusernew.ui.splash.SplashFragment"
+        android:label="fragment_splash"
+        tools:layout="@layout/fragment_splash" >
+        <action
+            android:id="@+id/action_splashFragment_to_listUserFragment"
+            app:destination="@id/listUserFragment"
+            app:popUpTo="@id/listUserFragment"
+            app:popUpToInclusive="true" />
+    </fragment>
+    <fragment
+        android:id="@+id/listUserFragment"
+        android:name="com.example.githubusernew.ui.listuser.ListUserFragment"
+        android:label="fragment_list_user"
+        tools:layout="@layout/fragment_list_user" >
+        <action
+            android:id="@+id/action_listUserFragment_to_darkSettingFragment"
+            app:destination="@id/darkSettingFragment" />
+        <action
+            android:id="@+id/action_listUserFragment_to_favoriteUserFragment"
+            app:destination="@id/favoriteUserFragment" />
+        <action
+            android:id="@+id/action_listUserFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/darkSettingFragment"
+        android:name="com.example.githubusernew.darkmode.DarkSettingFragment"
+        android:label="fragment_dark_setting"
+        tools:layout="@layout/fragment_dark_setting" >
+        <action
+            android:id="@+id/action_darkSettingFragment_to_listUserFragment"
+            app:destination="@id/listUserFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragment"
+        android:name="com.example.githubusernew.ui.detailuser.DetailFragment"
+        android:label="fragment_detail"
+        tools:layout="@layout/fragment_detail" >
+        <action
+            android:id="@+id/action_detailFragment_to_listUserFragment"
+            app:destination="@id/listUserFragment" />
+        <action
+            android:id="@+id/action_detailFragment_to_followersFragment"
+            app:destination="@id/followersFragment" />
+        <action
+            android:id="@+id/action_detailFragment_to_followingsFragment"
+            app:destination="@id/followingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/favoriteUserFragment"
+        android:name="com.example.githubusernew.ui.favoriteuser.FavoriteUserFragment"
+        android:label="fragment_favorite_user"
+        tools:layout="@layout/fragment_favorite_user" >
+        <action
+            android:id="@+id/action_favoriteUserFragment_to_listUserFragment"
+            app:destination="@id/listUserFragment" />
+        <action
+            android:id="@+id/action_favoriteUserFragment_to_detailFragment"
+            app:destination="@id/detailFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/followersFragment"
+        android:name="com.example.githubusernew.ui.follow.FollowersFragment"
+        android:label="fragment_followers"
+        tools:layout="@layout/fragment_followers" />
+    <fragment
+        android:id="@+id/followingsFragment"
+        android:name="com.example.githubusernew.ui.follow.FollowingsFragment"
+        android:label="fragment_followings"
+        tools:layout="@layout/fragment_followings" />
+</navigation>
