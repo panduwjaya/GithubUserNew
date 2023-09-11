@@ -6,9 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.githubusernew.data.remote.model.FollowUserResponseItem
 import com.example.githubusernew.databinding.FragmentFollowingsBinding
 import com.example.githubusernew.ui.adapter.FollowAdapter
-import com.example.githubusernew.ui.adapter.SearchUserAdapter
 import com.example.githubusernew.ui.detailuser.DetailFragment
 import com.example.githubusernew.utils.UserViewModelFactory
 
@@ -24,7 +25,8 @@ class FollowingsFragment : Fragment() {
     private var _binding: FragmentFollowingsBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var followingsAdapter: FollowAdapter
+    private val list = ArrayList<FollowUserResponseItem>()
+    private val followingsAdapter = FollowAdapter(list)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,8 +47,17 @@ class FollowingsFragment : Fragment() {
             setListFollowing(dataUsername)
         }
 
+        // recycler
+        showRecycler()
+
         // getListFollower
         getListFollower()
+    }
+
+    fun showRecycler(){
+        binding.rvUser.layoutManager = LinearLayoutManager(requireActivity())
+        binding.rvUser.setHasFixedSize(true)
+        binding.rvUser.adapter = followingsAdapter
     }
 
     private fun setListFollowing(dataUsername: String) {

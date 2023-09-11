@@ -19,16 +19,16 @@ class UserViewModelFactory private constructor(private val userRepository: UserR
             return ListUserViewModel(userRepository) as T
         }
         if (modelClass.isAssignableFrom(DetailViewModel::class.java)){
-            return ListUserViewModel(userRepository) as T
+            return DetailViewModel(userRepository) as T
         }
         if (modelClass.isAssignableFrom(FollowersViewModel::class.java)){
-            return ListUserViewModel(userRepository) as T
+            return FollowersViewModel(userRepository) as T
         }
         if (modelClass.isAssignableFrom(FollowingsViewModel::class.java)){
-            return ListUserViewModel(userRepository) as T
+            return FollowingsViewModel(userRepository) as T
         }
         if (modelClass.isAssignableFrom(FavoriteUserViewModel::class.java)){
-            return ListUserViewModel(userRepository) as T
+            return FavoriteUserViewModel(userRepository) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class: " + modelClass.name)
     }

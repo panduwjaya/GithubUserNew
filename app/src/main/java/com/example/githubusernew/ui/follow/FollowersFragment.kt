@@ -6,6 +6,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.githubusernew.data.remote.model.FollowUserResponseItem
 import com.example.githubusernew.databinding.FragmentFollowersBinding
 import com.example.githubusernew.ui.adapter.FollowAdapter
 import com.example.githubusernew.ui.adapter.SearchUserAdapter
@@ -24,7 +26,8 @@ class FollowersFragment : Fragment() {
     private var _binding: FragmentFollowersBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var followersAdapter: FollowAdapter
+    private val list = ArrayList<FollowUserResponseItem>()
+    private var followersAdapter = FollowAdapter(list)
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -47,8 +50,17 @@ class FollowersFragment : Fragment() {
             setListFollower(dataUsername)
         }
 
+        // recycler
+        showRecycler()
+
         // getListFollower
         getListFollower()
+    }
+
+    fun showRecycler(){
+        binding.rvUser.layoutManager = LinearLayoutManager(requireActivity())
+        binding.rvUser.setHasFixedSize(true)
+        binding.rvUser.adapter = followersAdapter
     }
 
     private fun setListFollower(dataUsername: String) {

@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
-import com.dicoding.mydatastore.SettingPreferences
 import kotlinx.coroutines.launch
 
 class DarkSettingViewModel(private val pref: SettingPreferences) : ViewModel() {

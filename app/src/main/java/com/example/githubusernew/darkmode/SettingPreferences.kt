@@ -1,4 +1,4 @@
-package com.dicoding.mydatastore
+package com.example.githubusernew.darkmode
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences

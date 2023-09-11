@@ -26,6 +26,7 @@ class DetailFragment : Fragment() {
     private val factory: UserViewModelFactory by lazy {
         UserViewModelFactory.getInstance(requireActivity())
     }
+
     private val viewModel: DetailViewModel by viewModels {
         factory
     }
@@ -34,7 +35,7 @@ class DetailFragment : Fragment() {
     private val binding get() = _binding!!
 
     companion object {
-        val EXTRA_USERNAME = "extra_username"
+        const val EXTRA_USERNAME = "extra_username"
 
         @StringRes
         private val TAB_TITLES = intArrayOf(
@@ -55,15 +56,12 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         // get data
         val dataId = arguments?.getInt(ListUserFragment.EXTRA_ID)
         val dataLogin = arguments?.getString(ListUserFragment.EXTRA_LOGIN)
         val dataAvatar = arguments?.getString(ListUserFragment.EXTRA_AVATAR)
         val dataHTML = arguments?.getString(ListUserFragment.EXTRA_HTML)
-
-        // send data
-        val mBundle = Bundle()
-        mBundle.putString(EXTRA_USERNAME, dataLogin)
 
         // set detailLayout
         if (dataLogin != null) {
@@ -72,6 +70,7 @@ class DetailFragment : Fragment() {
 
         // get detailLayout
         getDetailUser()
+
         // check user
         var checkId = viewModel.checkFavorite(id)
 
@@ -85,14 +84,8 @@ class DetailFragment : Fragment() {
             if(checkId == null){
                 binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_saved))
                 // data disimpan kedalam database
-                if (dataAvatar != null) {
-                    if (dataLogin != null) {
-                        if (dataId != null) {
-                            if (dataHTML != null) {
-                                viewModel.addFavorite(dataId,dataLogin,dataAvatar,dataHTML)
-                            }
-                        }
-                    }
+                if (dataId != null) {
+                    viewModel.addFavorite(dataId,dataLogin,dataAvatar,dataHTML)
                 }
 
             }else if(checkId != null){
@@ -102,9 +95,10 @@ class DetailFragment : Fragment() {
             }
         }
 
-        // section pager adapter
-        val sectionsPagerAdapter = SectionsPagerAdapter(requireActivity())
+        // sectionPagerAdapter
+        val sectionsPagerAdapter = SectionsPagerAdapter(requireActivity(), dataLogin)
         val viewPager: ViewPager2 = view.findViewById(R.id.view_pager)
+
         viewPager.adapter = sectionsPagerAdapter
         val tabs: TabLayout = view.findViewById(R.id.tabs)
 
@@ -117,7 +111,7 @@ class DetailFragment : Fragment() {
 
     private fun getDetailUser() {
         viewModel.getDetailUser().observe(requireActivity()){result->
-            if (result != null || result == null) {
+            if (result != null) {
                 Glide.with(requireActivity())
                     .load(result.avatarUrl)
                     .transition(DrawableTransitionOptions.withCrossFade())

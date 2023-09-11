@@ -11,7 +11,7 @@ class DetailViewModel(private val userRepository: UserRepository): ViewModel() {
 
     fun checkFavorite(id: Int) = userRepository.checkFavorite(id)
 
-    fun addFavorite(id: Int, login: String,avatarUrl: String, html_url: String) = userRepository.addFavorite(id,login,avatarUrl,html_url)
+    fun addFavorite(id: Int, login: String? = null,avatarUrl: String? = null, htmlUrl: String? = null) = userRepository.addFavorite(id,login,avatarUrl,htmlUrl)
 
     fun deleteFavorite(id: Int) = userRepository.deleteFavorite(id)
 }

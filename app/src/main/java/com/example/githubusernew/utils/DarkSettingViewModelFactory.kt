@@ -3,7 +3,7 @@ package com.example.githubusernew.utils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.NewInstanceFactory
 import com.example.githubusernew.darkmode.DarkSettingViewModel
-import com.dicoding.mydatastore.SettingPreferences
+import com.example.githubusernew.darkmode.SettingPreferences
 
 class DarkSettingViewModelFactory(private val pref: SettingPreferences) : NewInstanceFactory() {
 

@@ -17,7 +17,7 @@ data class FavoriteEntity(
     @field:ColumnInfo(name = "login")
     val login: String? = null,
     @field:ColumnInfo(name = "avatar_url")
-    val avatar_url: String,
+    val avatar_url: String? = null,
     @field:ColumnInfo(name = "html_url")
-    val html_url: String,
+    val html_url: String? = null,
 ): Parcelable

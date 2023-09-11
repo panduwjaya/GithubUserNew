@@ -12,7 +12,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.dicoding.mydatastore.SettingPreferences
 import com.example.githubusernew.databinding.FragmentDarkSettingBinding
 import com.example.githubusernew.utils.DarkSettingViewModelFactory
 

@@ -54,7 +54,9 @@ class SearchUserAdapter(private val list: ArrayList<ItemsItem>): RecyclerView.Ad
         holder.bindData(list[position])
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount(): Int {
+        return list.size
+    }
 
     interface OnItemClickCallback{
         fun onItemClicked(data: ItemsItem)

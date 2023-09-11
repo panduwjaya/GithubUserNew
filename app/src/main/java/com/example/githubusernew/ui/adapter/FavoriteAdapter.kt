@@ -54,7 +54,9 @@ class FavoriteAdapter(private val list: ArrayList<FavoriteEntity>): RecyclerView
         holder.bindData(list[position])
     }
 
-    override fun getItemCount(): Int = list.size
+    override fun getItemCount(): Int {
+        return list.size
+    }
 
     interface OnItemClickCallback{
         fun onItemClicked(data: FavoriteEntity)

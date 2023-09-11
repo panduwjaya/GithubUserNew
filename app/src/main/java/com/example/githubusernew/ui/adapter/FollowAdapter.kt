@@ -13,7 +13,7 @@ import com.example.githubusernew.ui.notediffcallback.NoteDiffCallbackFollow
 
 class FollowAdapter(private val list: ArrayList<FollowUserResponseItem>): RecyclerView.Adapter<FollowAdapter.UserViewHolder>(){
 
-    fun setListUser(listNotes: List<FollowUserResponseItem>) {
+    fun setListUser(listNotes: ArrayList<FollowUserResponseItem>) {
         val diffCallback = NoteDiffCallbackFollow(this.list, listNotes)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.list.clear()

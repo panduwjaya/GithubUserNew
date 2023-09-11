@@ -46,7 +46,6 @@ class ListUserFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentListUserBinding.inflate(inflater, container, false)
-        postponeEnterTransition()
         return binding.root
     }
 
@@ -62,24 +61,34 @@ class ListUserFragment : Fragment() {
             return@setOnKeyListener false
         }
 
+        // fab
+        binding.fabFavorite.setOnClickListener{
+            view.findNavController().navigate(R.id.action_listUserFragment_to_favoriteUserFragment)
+        }
+
         listAdapter.setOnItemClickCallback(object : SearchUserAdapter.OnItemClickCallback{
             override fun onItemClicked(data: ItemsItem) {
+
                 val mBundle = Bundle()
                 mBundle.putInt(EXTRA_ID, data.id)
                 mBundle.putString(EXTRA_LOGIN,data.login)
                 mBundle.putString(EXTRA_AVATAR,data.avatarUrl)
                 mBundle.putString(EXTRA_HTML,data.htmlUrl)
-                view.findNavController().navigate(R.id.action_listUserFragment_to_detailFragment)
+                view.findNavController().navigate(R.id.action_listUserFragment_to_detailFragment, mBundle)
             }
         })
 
         // adapter
-        binding.rvUser.layoutManager = LinearLayoutManager(requireActivity())
-        binding.rvUser.setHasFixedSize(true)
-        binding.rvUser.adapter = listAdapter
+        showRecycler()
 
         // get user
         getListUser()
+    }
+
+    fun showRecycler(){
+        binding.rvUser.layoutManager = LinearLayoutManager(requireActivity())
+        binding.rvUser.setHasFixedSize(true)
+        binding.rvUser.adapter = listAdapter
     }
 
     private fun getListUser() {
@@ -94,6 +103,7 @@ class ListUserFragment : Fragment() {
     private fun findUser() {
         binding.apply {
             val query = myEditText.text.toString()
+
             if (query.isEmpty()) return
             showLoading(true)
             viewModel.setSearchUser(query)
@@ -108,11 +118,6 @@ class ListUserFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.favorite_menu -> {
-                // Handle option 1 click
-                findNavController().navigate(R.id.action_listUserFragment_to_favoriteUserFragment)
-                true
-            }
             R.id.settings_menu -> {
                 // Handle option 2 click
                 findNavController().navigate(R.id.action_listUserFragment_to_darkSettingFragment)
@@ -129,5 +134,4 @@ class ListUserFragment : Fragment() {
             binding.pbListUser.visibility = View.GONE
         }
     }
-
 }

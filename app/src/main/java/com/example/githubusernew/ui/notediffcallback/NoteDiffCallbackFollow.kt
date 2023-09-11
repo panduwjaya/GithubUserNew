@@ -9,7 +9,7 @@ import com.example.githubusernew.data.remote.model.FollowUserResponseItem
  * NoteDiffCallback digunakan sebagai pengganti notifyDataSetChanged
  * yang fungsinya sama-sama untuk melakukan pembaharuan item pada RecyclerView.
  */
-class NoteDiffCallbackFollow(private val oldNoteList: List<FollowUserResponseItem>, private val newNoteList: List<FollowUserResponseItem>) : DiffUtil.Callback() {
+class NoteDiffCallbackFollow(private val oldNoteList: ArrayList<FollowUserResponseItem>, private val newNoteList: ArrayList<FollowUserResponseItem>) : DiffUtil.Callback() {
     override fun getOldListSize(): Int = oldNoteList.size
     override fun getNewListSize(): Int = newNoteList.size
 

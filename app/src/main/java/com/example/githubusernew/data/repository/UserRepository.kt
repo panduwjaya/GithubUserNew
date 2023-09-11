@@ -34,8 +34,8 @@ class UserRepository private constructor(
     }
 
     // search user
-    private val _listUsers = MutableLiveData<ArrayList<ItemsItem>>()
-    val listUsers: LiveData<ArrayList<ItemsItem>> = _listUsers
+    private val _listUsers = MutableLiveData<ArrayList<ItemsItem>?>()
+    val listUsers: LiveData<ArrayList<ItemsItem>?> = _listUsers
 
     fun setSearchUser(query: String){
         ApiConfig.getApiServices()
@@ -58,7 +58,7 @@ class UserRepository private constructor(
             })
     }
 
-    fun getSearchUsers(): LiveData<ArrayList<ItemsItem>> {
+    fun getSearchUsers(): LiveData<ArrayList<ItemsItem>?> {
         return listUsers
     }
 
@@ -106,10 +106,9 @@ class UserRepository private constructor(
                     response: Response<ArrayList<FollowUserResponseItem>>
                 ) {
                     if (response.isSuccessful) {
-                        val followUserResponse = response.body()
-                        _listFollowers.value = followUserResponse
+                        _listFollowers.value = response.body()
                     } else {
-                        // Tangani kesalahan jika respons tidak berhasil
+                        Log.e(TAG, "onFailure: ${response.message()}")
                     }
                 }
 
@@ -145,8 +144,6 @@ class UserRepository private constructor(
                 override fun onFailure(call: Call<ArrayList<FollowUserResponseItem>>, t: Throwable) {
                     Log.e(TAG,"onFail ${t.message}")
                 }
-
-
             })
     }
 
@@ -155,9 +152,13 @@ class UserRepository private constructor(
     }
 
     // favorite
-    fun checkFavorite(id: Int) = favoriteDao.checkFavorite(id)
+    fun checkFavorite(id: Int){
+        appExecutors.diskIO.execute {
+            favoriteDao.checkFavorite(id)
+        }
+    }
 
-    fun addFavorite(id: Int, login: String,avatarUrl: String, html_url: String){
+    fun addFavorite(id: Int, login: String? = null,avatarUrl: String? = null, html_url: String? = null){
         val userList = ArrayList<FavoriteEntity>()
         appExecutors.diskIO.execute {
             var user = FavoriteEntity(

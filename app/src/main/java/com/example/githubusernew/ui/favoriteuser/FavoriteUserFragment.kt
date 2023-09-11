@@ -36,7 +36,6 @@ class FavoriteUserFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentFavoriteUserBinding.inflate(inflater, container, false)
-        postponeEnterTransition()
         return binding.root
     }
 
@@ -55,12 +54,16 @@ class FavoriteUserFragment : Fragment() {
         })
 
         // adapter setting
-        binding.rvUser.layoutManager = LinearLayoutManager(requireActivity())
-        binding.rvUser.setHasFixedSize(true)
-        binding.rvUser.adapter = favoriteAdapter
+        showRecycler()
 
         // get favorite
         getFavorite()
+    }
+
+    private fun showRecycler() {
+        binding.rvUser.layoutManager = LinearLayoutManager(requireActivity())
+        binding.rvUser.setHasFixedSize(true)
+        binding.rvUser.adapter = favoriteAdapter
     }
 
     private fun getFavorite(){
