@@ -56,7 +56,6 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         // get data
         val dataId = arguments?.getInt(ListUserFragment.EXTRA_ID)
         val dataLogin = arguments?.getString(ListUserFragment.EXTRA_LOGIN)
@@ -133,16 +132,16 @@ class DetailFragment : Fragment() {
         showLoading(true)
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
             binding.progressBar.visibility = View.VISIBLE
         } else {
             binding.progressBar.visibility = View.GONE
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

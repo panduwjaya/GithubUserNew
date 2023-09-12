@@ -1,5 +1,6 @@
 package com.example.githubusernew.ui.listuser
 
+import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.LayoutInflater
@@ -8,25 +9,39 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.githubusernew.R
+import com.example.githubusernew.darkmode.DarkSettingViewModel
+import com.example.githubusernew.darkmode.SettingPreferences
 import com.example.githubusernew.data.remote.model.ItemsItem
 import com.example.githubusernew.databinding.FragmentListUserBinding
 import com.example.githubusernew.ui.adapter.SearchUserAdapter
+import com.example.githubusernew.utils.DarkSettingViewModelFactory
 import com.example.githubusernew.utils.UserViewModelFactory
 
 class ListUserFragment : Fragment() {
 
+    // viewModel
     private val factory: UserViewModelFactory by lazy {
         UserViewModelFactory.getInstance(requireActivity())
     }
     private val viewModel: ListUserViewModel by viewModels {
         factory
     }
+
+    // darkViewModel
+    private lateinit var pref: SettingPreferences
+    private lateinit var darkViewModel: DarkSettingViewModel
+    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
     private var _binding: FragmentListUserBinding? = null
     private val binding get() = _binding!!
@@ -51,6 +66,21 @@ class ListUserFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        pref = SettingPreferences.getInstance(requireContext().dataStore)
+        darkViewModel = ViewModelProvider(requireActivity(), DarkSettingViewModelFactory(pref)).get(
+            DarkSettingViewModel::class.java
+        )
+
+        darkViewModel.getThemeSettings().observe(requireActivity()) { isDarkModeActive: Boolean ->
+            if (isDarkModeActive) {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
+
+        setHasOptionsMenu(true)
 
         // search user
         binding.myEditText.setOnKeyListener { v, keyCode, event ->
@@ -119,7 +149,6 @@ class ListUserFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.settings_menu -> {
-                // Handle option 2 click
                 findNavController().navigate(R.id.action_listUserFragment_to_darkSettingFragment)
                 true
             }

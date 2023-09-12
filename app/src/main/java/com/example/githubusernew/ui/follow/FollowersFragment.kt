@@ -77,6 +77,11 @@ class FollowersFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
             binding.pbFollower.visibility = View.VISIBLE
