@@ -72,7 +72,7 @@ class ListUserFragment : Fragment() {
             DarkSettingViewModel::class.java
         )
 
-        darkViewModel.getThemeSettings().observe(requireActivity()) { isDarkModeActive: Boolean ->
+        darkViewModel.getThemeSettings().observe(viewLifecycleOwner) { isDarkModeActive: Boolean ->
             if (isDarkModeActive) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
             } else {

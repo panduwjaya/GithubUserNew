@@ -47,7 +47,7 @@ class DarkSettingFragment : Fragment() {
         }
 
         // subscribe
-        viewModel.getThemeSettings().observe(requireActivity()) { isDarkModeActive: Boolean ->
+        viewModel.getThemeSettings().observe(viewLifecycleOwner) { isDarkModeActive: Boolean ->
             if (isDarkModeActive) {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
                 binding.switchTheme.isChecked = true
@@ -56,11 +56,5 @@ class DarkSettingFragment : Fragment() {
                 binding.switchTheme.isChecked = false
             }
         }
-
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }

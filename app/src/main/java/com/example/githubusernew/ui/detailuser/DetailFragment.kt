@@ -23,13 +23,16 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 class DetailFragment : Fragment() {
 
+    // viewModel
     private val factory: UserViewModelFactory by lazy {
         UserViewModelFactory.getInstance(requireActivity())
     }
-
     private val viewModel: DetailViewModel by viewModels {
         factory
     }
+
+    // darkViewModel
+
 
     private var _binding: FragmentDetailBinding? = null
     private val binding get() = _binding!!
@@ -109,19 +112,19 @@ class DetailFragment : Fragment() {
     }
 
     private fun getDetailUser() {
-        viewModel.getDetailUser().observe(requireActivity()){result->
+        viewModel.getDetailUser().observe(viewLifecycleOwner){result->
             if (result != null) {
                 Glide.with(requireActivity())
                     .load(result.avatarUrl)
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .apply(RequestOptions.circleCropTransform())
                     .into(binding.ivProfile)
-                binding.tvUsername.text = result.login
+                binding.tvUsername.text = result.login ?: "-"
                 binding.tvName.text = result.name
-                binding.tvUserCompany.text = result.company ?: "nothing"
-                binding.tvFollower.text = result.followers.toString()
-                binding.tvFollowing.text = result.following.toString()
-                binding.tvRepository.text = result.reposUrl
+                binding.tvUserCompany.text = result.company ?: "-"
+                binding.tvFollower.text = "${result.followers} Followers"
+                binding.tvFollowing.text = "${result.following} Followers"
+                binding.tvRepository.text = "${result.publicRepos} repo"
                 showLoading(false)
             }
         }
