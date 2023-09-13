@@ -152,6 +152,10 @@ class ListUserFragment : Fragment() {
                 findNavController().navigate(R.id.action_listUserFragment_to_darkSettingFragment)
                 true
             }
+            R.id.profile_menu -> {
+                findNavController().navigate(R.id.action_listUserFragment_to_profileFragment)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }

@@ -8,4 +8,10 @@
         android:icon="@drawable/ic_dark_mode"
         app:showAsAction="always"
         />
+    <item
+        android:id="@+id/profile_menu"
+        android:title="Profile"
+        android:icon="@drawable/ic_profile"
+        app:showAsAction="always"
+        />
 </menu>
