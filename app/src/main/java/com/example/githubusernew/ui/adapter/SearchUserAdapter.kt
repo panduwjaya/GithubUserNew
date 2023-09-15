@@ -2,16 +2,18 @@ package com.example.githubusernew.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
+import com.example.githubusernew.data.local.FavoriteEntity
 import com.example.githubusernew.data.remote.model.ItemsItem
 import com.example.githubusernew.databinding.ItemRowUserBinding
 import com.example.githubusernew.ui.notediffcallback.NoteDiffCallbackList
 
-class SearchUserAdapter(private val list: ArrayList<ItemsItem>): RecyclerView.Adapter<SearchUserAdapter.UserViewHolder>(){
+class SearchUserAdapter(private val list: ArrayList<FavoriteEntity>): RecyclerView.Adapter<SearchUserAdapter.UserViewHolder>(){
 
     private var onItemClickCallback: OnItemClickCallback? = null
 
@@ -19,7 +21,7 @@ class SearchUserAdapter(private val list: ArrayList<ItemsItem>): RecyclerView.Ad
         this.onItemClickCallback = onItemClickCallback
     }
 
-    fun setListUser(listNotes: ArrayList<ItemsItem>) {
+    fun setListUser(listNotes: List<FavoriteEntity>) {
         val diffCallback = NoteDiffCallbackList(this.list, listNotes)
         val diffResult = DiffUtil.calculateDiff(diffCallback)
         this.list.clear()
@@ -28,20 +30,20 @@ class SearchUserAdapter(private val list: ArrayList<ItemsItem>): RecyclerView.Ad
     }
 
     inner class UserViewHolder(val binding: ItemRowUserBinding): RecyclerView.ViewHolder(binding.root) {
-        fun bindData(user: ItemsItem) {
+        fun bindData(user: FavoriteEntity) {
 
             binding.root.setOnClickListener{
                 onItemClickCallback?.onItemClicked(user)
             }
 
             Glide.with(itemView)
-                .load(user.avatarUrl)
+                .load(user.avatar_url)
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .apply(RequestOptions.circleCropTransform())
                 .into(binding.ivItemAvatarUrl)
 
             binding.tvItemUsername.text = user.login
-            binding.tvItemHtmlUrl.text = user.htmlUrl
+            binding.tvItemHtmlUrl.text = user.html_url
         }
     }
 
@@ -59,7 +61,7 @@ class SearchUserAdapter(private val list: ArrayList<ItemsItem>): RecyclerView.Ad
     }
 
     interface OnItemClickCallback{
-        fun onItemClicked(data: ItemsItem)
+        fun onItemClicked(data: FavoriteEntity)
     }
 
 }

@@ -9,6 +9,7 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -22,10 +23,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.githubusernew.R
 import com.example.githubusernew.darkmode.DarkSettingViewModel
 import com.example.githubusernew.darkmode.SettingPreferences
-import com.example.githubusernew.data.remote.model.ItemsItem
+import com.example.githubusernew.data.local.FavoriteEntity
 import com.example.githubusernew.databinding.FragmentListUserBinding
 import com.example.githubusernew.ui.adapter.SearchUserAdapter
 import com.example.githubusernew.utils.DarkSettingViewModelFactory
+import com.example.githubusernew.utils.Result
 import com.example.githubusernew.utils.UserViewModelFactory
 
 class ListUserFragment : Fragment() {
@@ -46,7 +48,7 @@ class ListUserFragment : Fragment() {
     private var _binding: FragmentListUserBinding? = null
     private val binding get() = _binding!!
 
-    private val list = ArrayList<ItemsItem>()
+    private val list = ArrayList<FavoriteEntity>()
     private val listAdapter = SearchUserAdapter(list)
 
     companion object {
@@ -54,6 +56,7 @@ class ListUserFragment : Fragment() {
         val EXTRA_LOGIN = "extra_login"
         val EXTRA_AVATAR = "extra_avatar"
         val EXTRA_HTML = "extra_html"
+        val EXTRA_FAVORITED = "extra_favorite"
     }
 
     override fun onCreateView(
@@ -97,22 +100,19 @@ class ListUserFragment : Fragment() {
         }
 
         listAdapter.setOnItemClickCallback(object : SearchUserAdapter.OnItemClickCallback{
-            override fun onItemClicked(data: ItemsItem) {
-
+            override fun onItemClicked(data: FavoriteEntity) {
                 val mBundle = Bundle()
                 mBundle.putInt(EXTRA_ID, data.id)
                 mBundle.putString(EXTRA_LOGIN,data.login)
-                mBundle.putString(EXTRA_AVATAR,data.avatarUrl)
-                mBundle.putString(EXTRA_HTML,data.htmlUrl)
+                mBundle.putString(EXTRA_AVATAR,data.avatar_url)
+                mBundle.putString(EXTRA_HTML,data.html_url)
+                mBundle.putBoolean(EXTRA_FAVORITED,data.isFavorited)
                 view.findNavController().navigate(R.id.action_listUserFragment_to_detailFragment, mBundle)
             }
         })
 
         // adapter
         showRecycler()
-
-        // get user
-        getListUser()
     }
 
     fun showRecycler(){
@@ -121,22 +121,37 @@ class ListUserFragment : Fragment() {
         binding.rvUser.adapter = listAdapter
     }
 
-    private fun getListUser() {
-        viewModel.getSearchUser().observe(requireActivity()) { result ->
-            if (result != null){
-                showLoading(false)
-                listAdapter.setListUser(result)
-            }
-        }
-    }
-
     private fun findUser() {
         binding.apply {
             val query = myEditText.text.toString()
 
             if (query.isEmpty()) return
-            showLoading(true)
-            viewModel.setSearchUser(query)
+            viewModel.getSearchUser(query).observe(viewLifecycleOwner) { result ->
+                if (result != null) {
+                    when (result) {
+                        is Result.Loading -> {
+                            binding?.pbListUser?.visibility = View.VISIBLE
+                        }
+                        is Result.Success -> {
+                            binding?.pbListUser?.visibility = View.GONE
+                            val userData = result.data
+                            listAdapter.setListUser(userData)
+                        }
+                        is Result.Error -> {
+                            binding?.pbListUser?.visibility = View.GONE
+                            Toast.makeText(
+                                context,
+                                "Terjadi kesalahan" + result.error,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+
+                        else -> {
+
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -157,14 +172,6 @@ class ListUserFragment : Fragment() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun showLoading(isLoading: Boolean) {
-        if (isLoading) {
-            binding.pbListUser.visibility = View.VISIBLE
-        } else {
-            binding.pbListUser.visibility = View.GONE
         }
     }
 }

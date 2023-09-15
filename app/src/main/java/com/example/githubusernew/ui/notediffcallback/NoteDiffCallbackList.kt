@@ -1,6 +1,7 @@
 package com.example.githubusernew.ui.notediffcallback
 
 import androidx.recyclerview.widget.DiffUtil
+import com.example.githubusernew.data.local.FavoriteEntity
 import com.example.githubusernew.data.remote.model.ItemsItem
 
 /**
@@ -9,7 +10,7 @@ import com.example.githubusernew.data.remote.model.ItemsItem
  * NoteDiffCallback digunakan sebagai pengganti notifyDataSetChanged
  * yang fungsinya sama-sama untuk melakukan pembaharuan item pada RecyclerView.
  */
-class NoteDiffCallbackList(private val oldNoteList: ArrayList<ItemsItem>, private val newNoteList: ArrayList<ItemsItem>) : DiffUtil.Callback() {
+class NoteDiffCallbackList(private val oldNoteList: List<FavoriteEntity>, private val newNoteList: List<FavoriteEntity>) : DiffUtil.Callback() {
     override fun getOldListSize(): Int = oldNoteList.size
     override fun getNewListSize(): Int = newNoteList.size
 
@@ -20,6 +21,6 @@ class NoteDiffCallbackList(private val oldNoteList: ArrayList<ItemsItem>, privat
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val oldNote = oldNoteList[oldItemPosition]
         val newNote = newNoteList[newItemPosition]
-        return oldNote.avatarUrl == newNote.avatarUrl && oldNote.login == newNote.login && oldNote.htmlUrl == newNote.htmlUrl
+        return oldNote.avatar_url == newNote.avatar_url && oldNote.login == newNote.login && oldNote.html_url == newNote.html_url
     }
 }

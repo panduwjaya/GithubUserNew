@@ -1,30 +1,29 @@
 package com.example.githubusernew.ui.detailuser
 
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.example.githubusernew.R
-import com.example.githubusernew.data.local.FavoriteEntity
 import com.example.githubusernew.databinding.FragmentDetailBinding
+import com.example.githubusernew.databinding.FragmentDetailFavoriteBinding
+import com.example.githubusernew.ui.favoriteuser.FavoriteUserFragment
 import com.example.githubusernew.ui.listuser.ListUserFragment
 import com.example.githubusernew.utils.SectionsPagerAdapter
 import com.example.githubusernew.utils.UserViewModelFactory
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
-class DetailFragment : Fragment() {
+class DetailFragmentFavorite : Fragment() {
 
-    // viewModel
     private val factory: UserViewModelFactory by lazy {
         UserViewModelFactory.getInstance(requireActivity())
     }
@@ -32,8 +31,7 @@ class DetailFragment : Fragment() {
         factory
     }
 
-
-    private var _binding: FragmentDetailBinding? = null
+    private var _binding: FragmentDetailFavoriteBinding? = null
     private val binding get() = _binding!!
 
     companion object {
@@ -51,7 +49,7 @@ class DetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentDetailBinding.inflate(inflater, container, false)
+        _binding = FragmentDetailFavoriteBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -59,40 +57,15 @@ class DetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // get data
-        val dataId = arguments?.getInt(ListUserFragment.EXTRA_ID)
-        val dataLogin = arguments?.getString(ListUserFragment.EXTRA_LOGIN)
-        // perbaiki error ini
-        val dataFavorited = arguments?.getBoolean(ListUserFragment.EXTRA_FAVORITED) as FavoriteEntity
+        val dataLogin = arguments?.getString(FavoriteUserFragment.EXTRA_LOGIN)
 
         // set detailLayout
-        setDetailUser(dataLogin!!)
+        if (dataLogin != null) {
+            setDetailUser(dataLogin)
+        }
 
         // get detailLayout
         getDetailUser()
-
-        /*
-        jika isFavorited == 0 maka blank image
-        jika isFavorited == 1 maka fill image
-         */
-
-        viewModel.checkFavorite(dataId!!).observe(viewLifecycleOwner){result->
-            if(dataFavorited.isFavorited){
-                binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_not_saved))
-            } else{
-                binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_saved))
-            }
-
-            binding.btnSave.setOnClickListener{
-                if(dataFavorited.isFavorited){
-                    binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_saved))
-                    viewModel.deleteNews(dataFavorited)
-                }else{
-                    binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_not_saved))
-                    viewModel.saveNews(dataFavorited)
-                }
-            }
-        }
-
 
         // sectionPagerAdapter
         val sectionsPagerAdapter = SectionsPagerAdapter(requireActivity(), dataLogin)
@@ -102,10 +75,15 @@ class DetailFragment : Fragment() {
         val tabs: TabLayout = view.findViewById(R.id.tabs)
 
         TabLayoutMediator(tabs, viewPager) { tab, position ->
-            tab.text = resources.getString(TAB_TITLES[position])
+            tab.text = resources.getString(DetailFragmentFavorite.TAB_TITLES[position])
         }.attach()
 
         (requireActivity() as AppCompatActivity).supportActionBar?.elevation = 0f
+    }
+
+    private fun setDetailUser(login: String) {
+        viewModel.setDetaiUser(login)
+        showLoading(true)
     }
 
     private fun getDetailUser() {
@@ -125,11 +103,6 @@ class DetailFragment : Fragment() {
                 showLoading(false)
             }
         }
-    }
-
-    private fun setDetailUser(login: String) {
-        viewModel.setDetaiUser(login)
-        showLoading(true)
     }
 
     private fun showLoading(isLoading: Boolean) {

@@ -20,4 +20,6 @@ data class FavoriteEntity(
     val avatar_url: String? = null,
     @field:ColumnInfo(name = "html_url")
     val html_url: String? = null,
+    @field:ColumnInfo(name = "favorited")
+    var isFavorited: Boolean
 ): Parcelable

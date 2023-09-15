@@ -67,8 +67,8 @@
             android:id="@+id/action_favoriteUserFragment_to_listUserFragment"
             app:destination="@id/listUserFragment" />
         <action
-            android:id="@+id/action_favoriteUserFragment_to_detailFragment"
-            app:destination="@id/detailFragment" />
+            android:id="@+id/action_favoriteUserFragment_to_detailFragmentFavorite"
+            app:destination="@id/detailFragmentFavorite" />
     </fragment>
     <fragment
         android:id="@+id/followersFragment"
@@ -88,5 +88,14 @@
         <action
             android:id="@+id/action_profileFragment_to_listUserFragment"
             app:destination="@id/listUserFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/detailFragmentFavorite"
+        android:name="com.example.githubusernew.ui.detailuser.DetailFragmentFavorite"
+        android:label="fragment_detail_favorite"
+        tools:layout="@layout/fragment_detail_favorite" >
+        <action
+            android:id="@+id/action_detailFragmentFavorite_to_favoriteUserFragment"
+            app:destination="@id/favoriteUserFragment" />
     </fragment>
 </navigation>
