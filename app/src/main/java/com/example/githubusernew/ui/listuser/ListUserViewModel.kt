@@ -1,7 +1,6 @@
 package com.example.githubusernew.ui.listuser
 
 import androidx.lifecycle.ViewModel
-import com.example.githubusernew.data.local.FavoriteEntity
 import com.example.githubusernew.data.repository.UserRepository
 
 

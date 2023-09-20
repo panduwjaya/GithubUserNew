@@ -59,10 +59,8 @@ class DetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // get data
-        val dataId = arguments?.getInt(ListUserFragment.EXTRA_ID)
         val dataLogin = arguments?.getString(ListUserFragment.EXTRA_LOGIN)
-        // perbaiki error ini
-        val dataFavorited = arguments?.getBoolean(ListUserFragment.EXTRA_FAVORITED) as FavoriteEntity
+        val dataParcel = arguments?.getParcelable<FavoriteEntity>(ListUserFragment.EXTRA_PARCEL)
 
         // set detailLayout
         setDetailUser(dataLogin!!)
@@ -74,22 +72,19 @@ class DetailFragment : Fragment() {
         jika isFavorited == 0 maka blank image
         jika isFavorited == 1 maka fill image
          */
+        if (dataParcel!!.isFavorited){
+            binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_saved))
+        }else{
+            binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_not_saved))
+        }
 
-        viewModel.checkFavorite(dataId!!).observe(viewLifecycleOwner){result->
-            if(dataFavorited.isFavorited){
+        binding.btnSave.setOnClickListener {
+            if (dataParcel!!.isFavorited) {
                 binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_not_saved))
-            } else{
+                viewModel.deleteNews(dataParcel)
+            }else{
                 binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_saved))
-            }
-
-            binding.btnSave.setOnClickListener{
-                if(dataFavorited.isFavorited){
-                    binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_saved))
-                    viewModel.deleteNews(dataFavorited)
-                }else{
-                    binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_not_saved))
-                    viewModel.saveNews(dataFavorited)
-                }
+                viewModel.saveNews(dataParcel)
             }
         }
 
@@ -121,7 +116,7 @@ class DetailFragment : Fragment() {
                 binding.tvUserCompany.text = result.company ?: "-"
                 binding.tvFollower.text = "${result.followers} Followers"
                 binding.tvFollowing.text = "${result.following} Following"
-                binding.tvRepository.text = "${result.publicRepos} repo"
+                binding.tvRepository.text = "${result.publicRepos} Repo"
                 showLoading(false)
             }
         }

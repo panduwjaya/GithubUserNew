@@ -15,7 +15,7 @@ tools:context=".ui.profile.ProfileFragment">
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/img_profile" />
+        android:src="@drawable/img_profile" />
 
     <TextView
         android:id="@+id/tv_profile_nama"

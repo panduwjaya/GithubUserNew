@@ -13,10 +13,6 @@ class DetailViewModel(private val userRepository: UserRepository): ViewModel() {
         return userRepository.listDetailUsers
     }
 
-    fun checkFavorite(id: Int): LiveData<List<FavoriteEntity>>{
-        return userRepository.checkFavorite(id)
-    }
-
     fun saveNews(user: FavoriteEntity) {
         userRepository.setFavoriteUser(user, true)
     }

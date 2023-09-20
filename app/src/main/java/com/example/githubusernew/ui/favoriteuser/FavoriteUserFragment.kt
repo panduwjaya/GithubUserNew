@@ -50,6 +50,7 @@ class FavoriteUserFragment : Fragment() {
             override fun onItemClicked(data: FavoriteEntity) {
                 val mBundle = Bundle()
                 mBundle.putString(EXTRA_LOGIN,data.login)
+                mBundle.putParcelable(ListUserFragment.EXTRA_PARCEL,data)
                 view.findNavController().navigate(R.id.action_favoriteUserFragment_to_detailFragmentFavorite,mBundle)
             }
         })

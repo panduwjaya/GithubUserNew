@@ -13,7 +13,8 @@
         <action
             android:id="@+id/action_splashFragment_to_listUserFragment"
             app:destination="@id/listUserFragment"
-            app:popUpTo="@id/listUserFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/splashFragment"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment

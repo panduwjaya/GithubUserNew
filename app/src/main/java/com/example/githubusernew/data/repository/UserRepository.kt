@@ -21,7 +21,6 @@ class UserRepository private constructor(
     private val favoriteDao: FavoriteDao,
     private val appExecutors: AppExecutors
 ){
-    // make single instance
     companion object {
         @Volatile
         private var instance: UserRepository? = null
@@ -46,23 +45,23 @@ class UserRepository private constructor(
             override fun onResponse(call: Call<SearchUserResponse>, response: Response<SearchUserResponse>) {
                 if (response.isSuccessful) {
                     // bagian remote data
-                    val articles = response.body()?.items
-                    val newsList = ArrayList<FavoriteEntity>()
+                    val item = response.body()?.items
+                    val userList = ArrayList<FavoriteEntity>()
                     // bagian local data
                     appExecutors.diskIO.execute {
-                        articles?.forEach { article ->
-                            val isBookmarked = favoriteDao.isFavorited(article.id)
-                            val news = FavoriteEntity(
-                                article.id,
-                                article.login,
-                                article.avatarUrl,
-                                article.htmlUrl,
+                        item?.forEach { item ->
+                            val isBookmarked = favoriteDao.isFavorited(item.id)
+                            val user = FavoriteEntity(
+                                item.id,
+                                item.login,
+                                item.avatarUrl,
+                                item.htmlUrl,
                                 isBookmarked
                             )
-                            newsList.add(news)
+                            userList.add(user)
                         }
                         favoriteDao.deleteAll()
-                        favoriteDao.insertUser(newsList)
+                        favoriteDao.insertUser(userList)
                     }
                 }
             }
@@ -74,7 +73,8 @@ class UserRepository private constructor(
 
         // local source
         // addSource digunakan apabila sumber data adalah LiveData
-        val localData = favoriteDao.getFavoriteUser()
+        val input = "%$query%"
+        val localData: LiveData<List<FavoriteEntity>> = favoriteDao.getUser(input)
         result.addSource(localData) { newData: List<FavoriteEntity> ->
             result.value = Result.Success(newData)
         }
@@ -159,10 +159,6 @@ class UserRepository private constructor(
     }
 
     // favorite
-    fun checkFavorite(id: Int): LiveData<List<FavoriteEntity>>{
-        return favoriteDao.checkFavorited(id)
-    }
-
     fun setFavoriteUser(user: FavoriteEntity, favoriteState: Boolean) {
         appExecutors.diskIO.execute {
             user.isFavorited = favoriteState

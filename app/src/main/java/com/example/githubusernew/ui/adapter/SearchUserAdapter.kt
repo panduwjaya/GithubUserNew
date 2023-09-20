@@ -2,14 +2,12 @@ package com.example.githubusernew.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.example.githubusernew.data.local.FavoriteEntity
-import com.example.githubusernew.data.remote.model.ItemsItem
 import com.example.githubusernew.databinding.ItemRowUserBinding
 import com.example.githubusernew.ui.notediffcallback.NoteDiffCallbackList
 

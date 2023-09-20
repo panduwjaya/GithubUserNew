@@ -52,11 +52,8 @@ class ListUserFragment : Fragment() {
     private val listAdapter = SearchUserAdapter(list)
 
     companion object {
-        val EXTRA_ID = "extra_id"
-        val EXTRA_LOGIN = "extra_login"
-        val EXTRA_AVATAR = "extra_avatar"
-        val EXTRA_HTML = "extra_html"
-        val EXTRA_FAVORITED = "extra_favorite"
+        const val EXTRA_LOGIN = "extra_login"
+        const val EXTRA_PARCEL = "extra_parcel"
     }
 
     override fun onCreateView(
@@ -87,7 +84,7 @@ class ListUserFragment : Fragment() {
 
         // search user
         binding.myEditText.setOnKeyListener { v, keyCode, event ->
-            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER){
+            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
                 findUser()
                 return@setOnKeyListener true
             }
@@ -95,18 +92,15 @@ class ListUserFragment : Fragment() {
         }
 
         // fab
-        binding.fabFavorite.setOnClickListener{
+        binding.fabFavorite.setOnClickListener {
             view.findNavController().navigate(R.id.action_listUserFragment_to_favoriteUserFragment)
         }
 
-        listAdapter.setOnItemClickCallback(object : SearchUserAdapter.OnItemClickCallback{
+        listAdapter.setOnItemClickCallback(object : SearchUserAdapter.OnItemClickCallback {
             override fun onItemClicked(data: FavoriteEntity) {
                 val mBundle = Bundle()
-                mBundle.putInt(EXTRA_ID, data.id)
-                mBundle.putString(EXTRA_LOGIN,data.login)
-                mBundle.putString(EXTRA_AVATAR,data.avatar_url)
-                mBundle.putString(EXTRA_HTML,data.html_url)
-                mBundle.putBoolean(EXTRA_FAVORITED,data.isFavorited)
+                mBundle.putString(EXTRA_LOGIN, data.login)
+                mBundle.putParcelable(EXTRA_PARCEL,data)
                 view.findNavController().navigate(R.id.action_listUserFragment_to_detailFragment, mBundle)
             }
         })
@@ -115,40 +109,40 @@ class ListUserFragment : Fragment() {
         showRecycler()
     }
 
-    fun showRecycler(){
+    fun showRecycler() {
         binding.rvUser.layoutManager = LinearLayoutManager(requireActivity())
         binding.rvUser.setHasFixedSize(true)
         binding.rvUser.adapter = listAdapter
     }
 
     private fun findUser() {
-        binding.apply {
-            val query = myEditText.text.toString()
+        val query = binding.myEditText.text.toString()
 
-            if (query.isEmpty()) return
-            viewModel.getSearchUser(query).observe(viewLifecycleOwner) { result ->
-                if (result != null) {
-                    when (result) {
-                        is Result.Loading -> {
-                            binding?.pbListUser?.visibility = View.VISIBLE
-                        }
-                        is Result.Success -> {
-                            binding?.pbListUser?.visibility = View.GONE
-                            val userData = result.data
-                            listAdapter.setListUser(userData)
-                        }
-                        is Result.Error -> {
-                            binding?.pbListUser?.visibility = View.GONE
-                            Toast.makeText(
-                                context,
-                                "Terjadi kesalahan" + result.error,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+        if (query.isEmpty()) return
+        viewModel.getSearchUser(query).observe(viewLifecycleOwner) { result ->
+            if (result != null) {
+                when (result) {
+                    is Result.Loading -> {
+                        binding?.pbListUser?.visibility = View.VISIBLE
+                    }
 
-                        else -> {
+                    is Result.Success -> {
+                        binding?.pbListUser?.visibility = View.GONE
+                        val userData = result.data
+                        listAdapter.setListUser(userData)
+                    }
 
-                        }
+                    is Result.Error -> {
+                        binding?.pbListUser?.visibility = View.GONE
+                        Toast.makeText(
+                            context,
+                            "Terjadi kesalahan" + result.error,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
+                    else -> {
+
                     }
                 }
             }
@@ -167,10 +161,12 @@ class ListUserFragment : Fragment() {
                 findNavController().navigate(R.id.action_listUserFragment_to_darkSettingFragment)
                 true
             }
+
             R.id.profile_menu -> {
                 findNavController().navigate(R.id.action_listUserFragment_to_profileFragment)
                 true
             }
+
             else -> super.onOptionsItemSelected(item)
         }
     }

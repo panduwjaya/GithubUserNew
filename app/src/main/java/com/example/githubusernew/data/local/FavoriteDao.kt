@@ -14,15 +14,15 @@ interface FavoriteDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insertUser(user: List<FavoriteEntity>)
 
-    // mengabil data dari favorite user
-    @Query("SELECT * FROM favorite_user ORDER BY id DESC")
-    fun getUser(): LiveData<List<FavoriteEntity>>
+    // mengambil data
+    @Query("SELECT * FROM favorite_user WHERE login LIKE :login")
+    fun getUser(login: String): LiveData<List<FavoriteEntity>>
 
     // memperbarui data
     @Update
     fun updateUser(user: FavoriteEntity)
 
-    @Query("SELECT * FROM favorite_user ORDER BY id ASC")
+    @Query("SELECT * FROM favorite_user WHERE favorited = 1")
     fun getFavoriteUser(): LiveData<List<FavoriteEntity>>
 
     @Query("DELETE FROM favorite_user WHERE favorited = 0")
@@ -33,5 +33,4 @@ interface FavoriteDao {
 
     @Query("SELECT * FROM favorite_user WHERE id = :id")
     fun checkFavorited(id: Int): LiveData<List<FavoriteEntity>>
-
 }

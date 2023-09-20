@@ -7,12 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
 import com.example.githubusernew.R
+import com.example.githubusernew.data.local.FavoriteEntity
 import com.example.githubusernew.databinding.FragmentDetailBinding
 import com.example.githubusernew.databinding.FragmentDetailFavoriteBinding
 import com.example.githubusernew.ui.favoriteuser.FavoriteUserFragment
@@ -35,8 +37,6 @@ class DetailFragmentFavorite : Fragment() {
     private val binding get() = _binding!!
 
     companion object {
-        const val EXTRA_USERNAME = "extra_username"
-
         @StringRes
         private val TAB_TITLES = intArrayOf(
             R.string.tab_follower,
@@ -58,14 +58,30 @@ class DetailFragmentFavorite : Fragment() {
 
         // get data
         val dataLogin = arguments?.getString(FavoriteUserFragment.EXTRA_LOGIN)
+        val dataParcel = arguments?.getParcelable<FavoriteEntity>(ListUserFragment.EXTRA_PARCEL)
 
         // set detailLayout
-        if (dataLogin != null) {
-            setDetailUser(dataLogin)
-        }
+        setDetailUser(dataLogin!!)
 
         // get detailLayout
         getDetailUser()
+
+        // favorite
+        if (dataParcel!!.isFavorited){
+            binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_saved))
+        }else{
+            binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_not_saved))
+        }
+
+        binding.btnSave.setOnClickListener {
+            if (dataParcel!!.isFavorited) {
+                binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_not_saved))
+                viewModel.deleteNews(dataParcel)
+            }else{
+                binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_saved))
+                viewModel.saveNews(dataParcel)
+            }
+        }
 
         // sectionPagerAdapter
         val sectionsPagerAdapter = SectionsPagerAdapter(requireActivity(), dataLogin)
@@ -75,7 +91,7 @@ class DetailFragmentFavorite : Fragment() {
         val tabs: TabLayout = view.findViewById(R.id.tabs)
 
         TabLayoutMediator(tabs, viewPager) { tab, position ->
-            tab.text = resources.getString(DetailFragmentFavorite.TAB_TITLES[position])
+            tab.text = resources.getString(TAB_TITLES[position])
         }.attach()
 
         (requireActivity() as AppCompatActivity).supportActionBar?.elevation = 0f
@@ -99,7 +115,7 @@ class DetailFragmentFavorite : Fragment() {
                 binding.tvUserCompany.text = result.company ?: "-"
                 binding.tvFollower.text = "${result.followers} Followers"
                 binding.tvFollowing.text = "${result.following} Following"
-                binding.tvRepository.text = "${result.publicRepos} repo"
+                binding.tvRepository.text = "${result.publicRepos} Repo"
                 showLoading(false)
             }
         }
