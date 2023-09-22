@@ -30,7 +30,4 @@ interface FavoriteDao {
 
     @Query("SELECT EXISTS(SELECT * FROM favorite_user WHERE id = :id AND favorited = 1)")
     fun isFavorited(id: Int): Boolean
-
-    @Query("SELECT * FROM favorite_user WHERE id = :id")
-    fun checkFavorited(id: Int): LiveData<List<FavoriteEntity>>
 }
