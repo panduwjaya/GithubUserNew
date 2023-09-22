@@ -1,13 +1,13 @@
 package com.example.githubusernew.ui.detailuser
 
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.viewpager2.widget.ViewPager2
 import com.bumptech.glide.Glide
@@ -16,15 +16,16 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.githubusernew.R
 import com.example.githubusernew.data.local.FavoriteEntity
 import com.example.githubusernew.databinding.FragmentDetailBinding
+import com.example.githubusernew.databinding.FragmentDetailFavoriteBinding
+import com.example.githubusernew.ui.favoriteuser.FavoriteUserFragment
 import com.example.githubusernew.ui.listuser.ListUserFragment
 import com.example.githubusernew.utils.SectionsPagerAdapter
 import com.example.githubusernew.utils.UserViewModelFactory
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
-class DetailFragment : Fragment() {
+class DetailFragmentFavorite : Fragment() {
 
-    // viewModel
     private val factory: UserViewModelFactory by lazy {
         UserViewModelFactory.getInstance(requireActivity())
     }
@@ -32,13 +33,10 @@ class DetailFragment : Fragment() {
         factory
     }
 
-
-    private var _binding: FragmentDetailBinding? = null
+    private var _binding: FragmentDetailFavoriteBinding? = null
     private val binding get() = _binding!!
 
     companion object {
-        const val EXTRA_USERNAME = "extra_username"
-
         @StringRes
         private val TAB_TITLES = intArrayOf(
             R.string.tab_follower,
@@ -51,7 +49,7 @@ class DetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        _binding = FragmentDetailBinding.inflate(inflater, container, false)
+        _binding = FragmentDetailFavoriteBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -59,7 +57,7 @@ class DetailFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // get data
-        val dataLogin = arguments?.getString(ListUserFragment.EXTRA_LOGIN)
+        val dataLogin = arguments?.getString(FavoriteUserFragment.EXTRA_LOGIN)
         val dataParcel = arguments?.getParcelable<FavoriteEntity>(ListUserFragment.EXTRA_PARCEL)
 
         // set detailLayout
@@ -68,10 +66,7 @@ class DetailFragment : Fragment() {
         // get detailLayout
         getDetailUser()
 
-        /*
-        jika isFavorited == 0 maka blank image
-        jika isFavorited == 1 maka fill image
-         */
+        // favorite
         if (dataParcel!!.isFavorited){
             binding.btnSave.setImageDrawable(ContextCompat.getDrawable(binding.btnSave.context, R.drawable.ic_saved))
         }else{
@@ -88,7 +83,6 @@ class DetailFragment : Fragment() {
             }
         }
 
-
         // sectionPagerAdapter
         val sectionsPagerAdapter = SectionsPagerAdapter(requireActivity(), dataLogin)
         val viewPager: ViewPager2 = view.findViewById(R.id.view_pager)
@@ -101,6 +95,11 @@ class DetailFragment : Fragment() {
         }.attach()
 
         (requireActivity() as AppCompatActivity).supportActionBar?.elevation = 0f
+    }
+
+    private fun setDetailUser(login: String) {
+        viewModel.setDetaiUser(login)
+        showLoading(true)
     }
 
     private fun getDetailUser() {
@@ -120,11 +119,6 @@ class DetailFragment : Fragment() {
                 showLoading(false)
             }
         }
-    }
-
-    private fun setDetailUser(login: String) {
-        viewModel.setDetaiUser(login)
-        showLoading(true)
     }
 
     private fun showLoading(isLoading: Boolean) {

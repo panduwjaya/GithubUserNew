@@ -31,6 +31,10 @@ class FavoriteUserFragment : Fragment() {
     private val list = ArrayList<FavoriteEntity>()
     private val favoriteAdapter = FavoriteAdapter(list)
 
+    companion object {
+        val EXTRA_LOGIN = "extra_login"
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -45,11 +49,9 @@ class FavoriteUserFragment : Fragment() {
         favoriteAdapter.setOnItemClickCallback(object : FavoriteAdapter.OnItemClickCallback{
             override fun onItemClicked(data: FavoriteEntity) {
                 val mBundle = Bundle()
-                mBundle.putInt(ListUserFragment.EXTRA_ID, data.id)
-                mBundle.putString(ListUserFragment.EXTRA_LOGIN,data.login)
-                mBundle.putString(ListUserFragment.EXTRA_AVATAR,data.avatar_url)
-                mBundle.putString(ListUserFragment.EXTRA_HTML,data.html_url)
-                view.findNavController().navigate(R.id.action_listUserFragment_to_detailFragment)
+                mBundle.putString(EXTRA_LOGIN,data.login)
+                mBundle.putParcelable(ListUserFragment.EXTRA_PARCEL,data)
+                view.findNavController().navigate(R.id.action_favoriteUserFragment_to_detailFragmentFavorite,mBundle)
             }
         })
 
@@ -67,10 +69,8 @@ class FavoriteUserFragment : Fragment() {
     }
 
     private fun getFavorite(){
-        viewModel.getFavoriteUser()?.observe(requireActivity()){result->
-            if (result != null){
-                favoriteAdapter.setListUser(result)
-            }
+        viewModel.getFavoriteUser()?.observe(viewLifecycleOwner){result->
+            favoriteAdapter.setListUser(result)
         }
     }
 

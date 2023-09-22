@@ -3,15 +3,16 @@ package com.example.githubusernew.data.repository
 import android.service.controls.ControlsProviderService.TAG
 import android.util.Log
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.MutableLiveData
 import com.example.githubusernew.data.local.FavoriteDao
 import com.example.githubusernew.data.local.FavoriteEntity
 import com.example.githubusernew.data.remote.model.DetailResponse
 import com.example.githubusernew.data.remote.model.FollowUserResponseItem
-import com.example.githubusernew.data.remote.model.ItemsItem
 import com.example.githubusernew.data.remote.model.SearchUserResponse
 import com.example.githubusernew.data.remote.network.ApiConfig
 import com.example.githubusernew.utils.AppExecutors
+import com.example.githubusernew.utils.Result
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,7 +21,6 @@ class UserRepository private constructor(
     private val favoriteDao: FavoriteDao,
     private val appExecutors: AppExecutors
 ){
-    // make single instance
     companion object {
         @Volatile
         private var instance: UserRepository? = null
@@ -33,33 +33,52 @@ class UserRepository private constructor(
             }.also { instance = it }
     }
 
-    // search user
-    private val _listUsers = MutableLiveData<ArrayList<ItemsItem>?>()
-    val listUsers: LiveData<ArrayList<ItemsItem>?> = _listUsers
+    // MediatorLiveData
+    private val result = MediatorLiveData<Result<List<FavoriteEntity>>>()
 
-    fun setSearchUser(query: String){
+    fun getSearchUser(query: String): LiveData<Result<List<FavoriteEntity>>> {
+        result.value = Result.Loading
         ApiConfig.getApiServices()
             .getSearch(query)
             .enqueue(object : Callback<SearchUserResponse> {
-                override fun onResponse(
-                    call: Call<SearchUserResponse>,
-                    response: Response<SearchUserResponse>
-                ) {
-                    if (response.isSuccessful){
-                        _listUsers.value = response.body()?.items
-                    }else {
-                        Log.e(TAG, "onFailure: ${response.message()}")
+            // success
+            override fun onResponse(call: Call<SearchUserResponse>, response: Response<SearchUserResponse>) {
+                if (response.isSuccessful) {
+                    // bagian remote data
+                    val item = response.body()?.items
+                    val userList = ArrayList<FavoriteEntity>()
+                    // bagian local data
+                    appExecutors.diskIO.execute {
+                        item?.forEach { item ->
+                            val isBookmarked = favoriteDao.isFavorited(item.id)
+                            val user = FavoriteEntity(
+                                item.id,
+                                item.login,
+                                item.avatarUrl,
+                                item.htmlUrl,
+                                isBookmarked
+                            )
+                            userList.add(user)
+                        }
+                        favoriteDao.deleteAll()
+                        favoriteDao.insertUser(userList)
                     }
                 }
+            }
+            // failed
+            override fun onFailure(call: Call<SearchUserResponse>, t: Throwable) {
+                result.value = Result.Error(t.message.toString())
+            }
+        })
 
-                override fun onFailure(call: Call<SearchUserResponse>, t: Throwable) {
-                    Log.e(TAG, "onFailure: ${t.message}")
-                }
-            })
-    }
-
-    fun getSearchUsers(): LiveData<ArrayList<ItemsItem>?> {
-        return listUsers
+        // local source
+        // addSource digunakan apabila sumber data adalah LiveData
+        val input = "%$query%"
+        val localData: LiveData<List<FavoriteEntity>> = favoriteDao.getUser(input)
+        result.addSource(localData) { newData: List<FavoriteEntity> ->
+            result.value = Result.Success(newData)
+        }
+        return result
     }
 
     // detail fragment
@@ -86,10 +105,6 @@ class UserRepository private constructor(
                 }
 
             })
-    }
-
-    fun getDetailUser(): LiveData<DetailResponse>{
-        return listDetailUsers
     }
 
 
@@ -119,10 +134,6 @@ class UserRepository private constructor(
             })
     }
 
-    fun getFollowers(): LiveData<ArrayList<FollowUserResponseItem>?> {
-        return listFollowers
-    }
-
     // following fragment
     private val _listFollowing = MutableLiveData<ArrayList<FollowUserResponseItem>?>()
     val listFollowing: LiveData<ArrayList<FollowUserResponseItem>?> = _listFollowing
@@ -147,38 +158,14 @@ class UserRepository private constructor(
             })
     }
 
-    fun getFollowings(): LiveData<ArrayList<FollowUserResponseItem>?> {
-        return listFollowing
-    }
-
     // favorite
-    fun checkFavorite(id: Int){
+    fun setFavoriteUser(user: FavoriteEntity, favoriteState: Boolean) {
         appExecutors.diskIO.execute {
-            favoriteDao.checkFavorite(id)
+            user.isFavorited = favoriteState
+            favoriteDao.updateUser(user)
         }
     }
 
-    fun addFavorite(id: Int, login: String? = null,avatarUrl: String? = null, html_url: String? = null){
-        val userList = ArrayList<FavoriteEntity>()
-        appExecutors.diskIO.execute {
-            var user = FavoriteEntity(
-                id,
-                login,
-                avatarUrl,
-                html_url
-            )
-            userList.add(user)
-        }
-        favoriteDao.insertFavorite(userList)
-    }
-
-    fun deleteFavorite(id: Int){
-        appExecutors.diskIO.execute {
-            favoriteDao.deleteAll(id)
-        }
-    }
-
-    // favorite fragment
     fun getFavoriteUser(): LiveData<List<FavoriteEntity>> {
         return favoriteDao.getFavoriteUser()
     }
