@@ -1,6 +1,8 @@
 package com.example.githubusernew.ui.follow
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,8 +14,13 @@ import com.example.githubusernew.databinding.FragmentFollowingsBinding
 import com.example.githubusernew.ui.adapter.FollowAdapter
 import com.example.githubusernew.ui.detailuser.DetailFragment
 import com.example.githubusernew.utils.UserViewModelFactory
+import java.util.Timer
+import java.util.TimerTask
 
 class FollowingsFragment : Fragment() {
+
+    // Handler
+    private val handler = Handler(Looper.getMainLooper())
 
     private val factory: UserViewModelFactory by lazy {
         UserViewModelFactory.getInstance(requireActivity())
@@ -33,8 +40,24 @@ class FollowingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentFollowingsBinding.inflate(inflater, container, false)
-        postponeEnterTransition()
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showLoading(true)
+
+        val timer = Timer()
+        val delay: Long = 500
+
+        val timerTask = object : TimerTask() {
+            override fun run() {
+                handler.post {
+                    getListFollowing()
+                }
+            }
+        }
+        timer.schedule(timerTask, delay)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,15 +66,10 @@ class FollowingsFragment : Fragment() {
         val dataUsername = arguments?.getString(DetailFragment.EXTRA_USERNAME)
 
         // setListFollower
-        if (dataUsername != null) {
-            setListFollowing(dataUsername)
-        }
+        setListFollowing(dataUsername!!)
 
         // recycler
         showRecycler()
-
-        // getListFollower
-        getListFollower()
     }
 
     fun showRecycler(){
@@ -65,11 +83,11 @@ class FollowingsFragment : Fragment() {
         showLoading(true)
     }
 
-    private fun getListFollower() {
-        viewModel.getListFollowings().observe(requireActivity()){result->
+    private fun getListFollowing() {
+        viewModel.getListFollowings().observe(viewLifecycleOwner){result->
             if (result != null) {
-                showLoading(false)
                 followingsAdapter.setListUser(result)
+                showLoading(false)
             }
         }
     }

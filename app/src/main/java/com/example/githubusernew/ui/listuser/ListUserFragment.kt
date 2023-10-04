@@ -2,6 +2,8 @@ package com.example.githubusernew.ui.listuser
 
 import android.content.Context
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.Menu
@@ -29,8 +31,13 @@ import com.example.githubusernew.ui.adapter.SearchUserAdapter
 import com.example.githubusernew.utils.DarkSettingViewModelFactory
 import com.example.githubusernew.utils.Result
 import com.example.githubusernew.utils.UserViewModelFactory
+import java.util.Timer
+import java.util.TimerTask
 
 class ListUserFragment : Fragment() {
+
+    // Handler
+    private val handler = Handler(Looper.getMainLooper())
 
     // viewModel
     private val factory: UserViewModelFactory by lazy {
@@ -64,6 +71,29 @@ class ListUserFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.myEditText.setOnKeyListener { v, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                binding?.pbListUser?.visibility = View.VISIBLE
+
+                val timer = Timer()
+                val delay: Long = 1000
+
+                val timerTask = object : TimerTask() {
+                    override fun run() {
+                        handler.post {
+                            findUser()
+                        }
+                    }
+                }
+                timer.schedule(timerTask, delay)
+                return@setOnKeyListener true
+            }
+            return@setOnKeyListener false
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -81,15 +111,6 @@ class ListUserFragment : Fragment() {
         }
 
         setHasOptionsMenu(true)
-
-        // search user
-        binding.myEditText.setOnKeyListener { v, keyCode, event ->
-            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                findUser()
-                return@setOnKeyListener true
-            }
-            return@setOnKeyListener false
-        }
 
         // fab
         binding.fabFavorite.setOnClickListener {
@@ -117,7 +138,6 @@ class ListUserFragment : Fragment() {
 
     private fun findUser() {
         val query = binding.myEditText.text.toString()
-
         if (query.isEmpty()) return
         viewModel.getSearchUser(query).observe(viewLifecycleOwner) { result ->
             if (result != null) {
@@ -148,7 +168,6 @@ class ListUserFragment : Fragment() {
             }
         }
     }
-
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.main_menu, menu)

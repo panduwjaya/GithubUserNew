@@ -1,6 +1,8 @@
 package com.example.githubusernew.ui.follow
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +12,15 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.githubusernew.data.remote.model.FollowUserResponseItem
 import com.example.githubusernew.databinding.FragmentFollowersBinding
 import com.example.githubusernew.ui.adapter.FollowAdapter
-import com.example.githubusernew.ui.adapter.SearchUserAdapter
 import com.example.githubusernew.ui.detailuser.DetailFragment
 import com.example.githubusernew.utils.UserViewModelFactory
+import java.util.Timer
+import java.util.TimerTask
 
 class FollowersFragment : Fragment() {
+
+    // Handler
+    private val handler = Handler(Looper.getMainLooper())
 
     private val factory: UserViewModelFactory by lazy {
         UserViewModelFactory.getInstance(requireActivity())
@@ -35,8 +41,24 @@ class FollowersFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         _binding = FragmentFollowersBinding.inflate(inflater, container, false)
-        postponeEnterTransition()
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        showLoading(true)
+
+        val timer = Timer()
+        val delay: Long = 500
+
+        val timerTask = object : TimerTask() {
+            override fun run() {
+                handler.post {
+                    getListFollower()
+                }
+            }
+        }
+        timer.schedule(timerTask, delay)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,15 +68,10 @@ class FollowersFragment : Fragment() {
         val dataUsername = arguments?.getString(DetailFragment.EXTRA_USERNAME)
 
         // setListFollower
-        if (dataUsername != null) {
-            setListFollower(dataUsername)
-        }
+        setListFollower(dataUsername!!)
 
         // recycler
         showRecycler()
-
-        // getListFollower
-        getListFollower()
     }
 
     fun showRecycler(){
@@ -69,10 +86,10 @@ class FollowersFragment : Fragment() {
     }
 
     private fun getListFollower() {
-        viewModel.getListFollowers().observe(requireActivity()){result->
+        viewModel.getListFollowers().observe(viewLifecycleOwner){result->
             if (result != null) {
-                showLoading(false)
                 followersAdapter.setListUser(result)
+                showLoading(false)
             }
         }
     }

@@ -42,7 +42,9 @@
         tools:layout="@layout/fragment_dark_setting" >
         <action
             android:id="@+id/action_darkSettingFragment_to_listUserFragment"
-            app:destination="@id/listUserFragment" />
+            app:destination="@id/listUserFragment"
+            app:launchSingleTop="false"
+            app:popUpToInclusive="false" />
     </fragment>
     <fragment
         android:id="@+id/detailFragment"
@@ -51,7 +53,10 @@
         tools:layout="@layout/fragment_detail" >
         <action
             android:id="@+id/action_detailFragment_to_listUserFragment"
-            app:destination="@id/listUserFragment" />
+            app:destination="@id/listUserFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/listUserFragment"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_detailFragment_to_followersFragment"
             app:destination="@id/followersFragment" />
@@ -97,6 +102,9 @@
         tools:layout="@layout/fragment_detail_favorite" >
         <action
             android:id="@+id/action_detailFragmentFavorite_to_favoriteUserFragment"
-            app:destination="@id/favoriteUserFragment" />
+            app:destination="@id/favoriteUserFragment"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/detailFragmentFavorite"
+            app:popUpToInclusive="true" />
     </fragment>
 </navigation>

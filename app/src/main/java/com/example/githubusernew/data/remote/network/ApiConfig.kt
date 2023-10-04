@@ -10,8 +10,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 object ApiConfig {
 
     fun getApiServices(): ApiServices {
-        val mySuperScretKey = BuildConfig.API_KEY
-        val myBaseURL = BuildConfig.BASE_URL
+        val mySuperScretKey = "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"
+        val myBaseURL = "https://api.github.com/"
 
         // auth token with interceptor
         val authInterceptor = Interceptor { chain ->

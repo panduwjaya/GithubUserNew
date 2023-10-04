@@ -44,6 +44,11 @@ class DetailFragmentFavorite : Fragment() {
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+        showLoading(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

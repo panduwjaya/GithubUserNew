@@ -46,6 +46,11 @@ class DetailFragment : Fragment() {
         )
     }
 
+    override fun onResume() {
+        super.onResume()
+        showLoading(true)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -112,7 +117,7 @@ class DetailFragment : Fragment() {
                     .apply(RequestOptions.circleCropTransform())
                     .into(binding.ivProfile)
                 binding.tvUsername.text = result.login ?: "-"
-                binding.tvName.text = result.name
+                binding.tvName.text = result.name ?: "-"
                 binding.tvUserCompany.text = result.company ?: "-"
                 binding.tvFollower.text = "${result.followers} Followers"
                 binding.tvFollowing.text = "${result.following} Following"
@@ -125,6 +130,7 @@ class DetailFragment : Fragment() {
     private fun setDetailUser(login: String) {
         viewModel.setDetaiUser(login)
         showLoading(true)
+
     }
 
     private fun showLoading(isLoading: Boolean) {
